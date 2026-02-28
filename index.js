@@ -7,12 +7,11 @@
 // 6. Server Startup (app.listen())
 // ===========================================================
 
-
 // step 1
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // step 2
 const app = express();
@@ -24,7 +23,7 @@ app.use(express.json());
 
 // step 4
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster1.oko4eb5.mongodb.net/?appName=Cluster1`;
-console.log(uri);
+// console.log(uri);
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -32,50 +31,59 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
-
 
 async function run() {
   try {
     // Connect the client to the server
     await client.connect();
-    console.log("conneted successfully to server");
-    const db = client.db("orchidDB");
-    const moviesCollection = db.collection("moviesColl");
-    const favoriteMoviesCollection = db.collection("favoritemoviesColl");
+    console.log('conneted successfully to server');
+    const db = client.db('orchidDB');
+    const moviesCollection = db.collection('moviesColl');
+    const favoriteMoviesCollection = db.collection('favoritemoviesColl');
 
     //=========== read opertion for all movies
-    app.get("/movies", async (req, res) => {
+    app.get('/movies', async (req, res) => {
       const cursor = moviesCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
     //=========== read opertion for one movies
-    app.get("/movies/:id", async (req, res) => {
+    app.get('/movies/:id', async (req, res) => {
       const query = { _id: new ObjectId(req.params.id) };
       const result = await moviesCollection.findOne(query);
       res.send(result);
     });
 
     //=========== create opertion for movies
-    app.post("/movies", async (req, res) => {
+    app.post('/movies', async (req, res) => {
       const doc = req.body;
       const result = await moviesCollection.insertOne(doc);
       res.send(result);
     });
 
-    app.delete("/movies/:id", async (req, res) => {
+    //=========== delete opertion for movies
+    app.delete('/movies/:id', async (req, res) => {
       const query = { _id: new ObjectId(req.params.id) };
       const result = await moviesCollection.deleteOne(query);
       res.send(result);
     });
 
+    //=========== create opertion for favourite movies
+    app.post('/favMovies', async (req, res) => {
+      const doc = req.body;
+      const result = await favoriteMoviesCollection.insertOne(doc);
+      res.send(result);
+    });
+
+   
+
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    await client.db('admin').command({ ping: 1 });
     console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!",
+      'Pinged your deployment. You successfully connected to MongoDB!'
     );
   } catch (error) {
     console.log(error);
@@ -84,8 +92,8 @@ async function run() {
 run();
 
 // step 5
-app.get("/", (req, res) => {
-  res.send("server is running...");
+app.get('/', (req, res) => {
+  res.send('server is running...');
 });
 
 // step 6
