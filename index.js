@@ -78,7 +78,12 @@ async function run() {
       res.send(result);
     });
 
-   
+    //=========== read opertion for favourite movies
+    app.get('/favMovies', async (req, res) => {
+      const cursor = favoriteMoviesCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 });
