@@ -45,7 +45,15 @@ async function run() {
 
     //=========== read opertion for all movies
     app.get('/movies', async (req, res) => {
-      const cursor = moviesCollection.find();
+      // Extract 'search' query parameter from URL
+      const { search } = req.query;
+      // Initialize query filter object
+      let option = {};
+      if (search) {
+        // This will perform a case-insensitive search on the 'title' field
+        option = { title: { $regex: search, $options: 'i' } };
+      }
+      const cursor = moviesCollection.find(option);
       const result = await cursor.toArray();
       res.send(result);
     });
