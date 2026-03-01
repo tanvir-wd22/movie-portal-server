@@ -71,6 +71,34 @@ async function run() {
       res.send(result);
     });
 
+    // ===============================================
+    // Route           |             Before           |           After
+    //  GET /favMovies | Returns all users' favorites | Filter by ?email= query
+    // DELETE /favMovies/:id | Filter by email (wrong) | Filter by _id (correct)
+    // ===============================================
+
+    //      😕 What is the difference?
+
+    // // req.params  → used when email is INSIDE the route path
+    // GET /favMovies/alice@gmail.com
+    //                ↑
+    //                this is params
+
+    // // req.query  → used when email is AFTER ? in the URL
+    // GET /favMovies?email=alice@gmail.com
+    //                ↑
+    //                this is query
+
+    // ===============================================
+
+    //=========== read opertion for favourite movies
+    app.get('/favMovies', async (req, res) => {
+      const query = { email: req.query.email };
+      const cursor = favoriteMoviesCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     //=========== create opertion for favourite movies
     app.post('/favMovies', async (req, res) => {
       const doc = req.body;
@@ -78,10 +106,10 @@ async function run() {
       res.send(result);
     });
 
-    //=========== read opertion for favourite movies
-    app.get('/favMovies', async (req, res) => {
-      const cursor = favoriteMoviesCollection.find();
-      const result = await cursor.toArray();
+    //=========== delete opertion for favourite movies
+    app.delete('/favMovies/:id', async (req, res) => {
+      const query = { _id: new ObjectId(req.params.id) };
+      const result = await favoriteMoviesCollection.deleteOne(query);
       res.send(result);
     });
 
