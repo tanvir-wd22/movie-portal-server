@@ -71,6 +71,15 @@ async function run() {
       res.send(result);
     });
 
+    //===========***** read opertion for top rated movies ******==============
+    app.get('/topMovies', async (req, res) => {
+      const allMovies = moviesCollection.find();
+      const sortedMovies = allMovies.sort({ rating: -1 });
+      const limitedMovies = sortedMovies.limit(6);
+      const result = await limitedMovies.toArray();
+      res.send(result);
+    });
+
     // ===============================================
     // Route           |             Before           |           After
     //  GET /favMovies | Returns all users' favorites | Filter by ?email= query
